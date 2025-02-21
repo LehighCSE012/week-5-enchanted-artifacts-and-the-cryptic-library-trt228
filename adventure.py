@@ -32,16 +32,18 @@ def find_clue(clues, new_clue):
 def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
     """Handles dungeon navigation and interactions."""
     for room in dungeon_rooms:
+        if len(room) != 4:
+            print(f"Skipping room {room[0]} due to incorrect tuple structure.")
+            continue
+        
         room_name, item, challenge_type, challenge_outcome = room
 
-        print(f"\nYou have entered: {room_name}")
+        print(f"You have entered: {room_name}")
 
-        # Handling found items
         if item:
             inventory.append(item)
             print(f"You found a {item} and added it to your inventory!")
 
-        # Handling challenges
         if challenge_type == "library":
             print("A vast library filled with ancient, cryptic texts.")
             possible_clues = [
@@ -58,17 +60,17 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
             if "staff_of_wisdom" in artifacts:
                 print("You understand the meaning of the clues and can bypass a puzzle challenge!")
 
-        elif challenge_outcome:
-            success_message, fail_message, health_penalty = challenge_outcome
-
-            if random.random() < 0.5:  # 50% chance of success
-                print(success_message)
-            else:
-                print(fail_message)
-                player_stats["health"] -= abs(health_penalty)
-                print(f"You lost {abs(health_penalty)} health!")
-
     return player_stats, inventory, clues
+
+def acquire_item(inventory, item):
+    """Adds an item to inventory."""
+    inventory.append(item)
+    print(f"You acquired: {item}")
+    return inventory
+
+def display_inventory(inventory):
+    """Displays the current inventory."""
+    print("Inventory:", inventory)
 
 def main():
     """Main game loop."""
@@ -90,7 +92,6 @@ def main():
         "staff_of_wisdom": {"description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"}
     }
 
-    # Random chance to discover an artifact
     if random.random() < 0.3:
         artifact_keys = list(artifacts.keys())
         if artifact_keys:
