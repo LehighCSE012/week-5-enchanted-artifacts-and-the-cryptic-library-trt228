@@ -111,9 +111,15 @@ def main():
     clues = set()
 
     artifacts = {
-        "amulet_of_vitality": {"description": "Glowing amulet, life force.", "power": 15, "effect": "increases health"},
-        "ring_of_strength": {"description": "Powerful ring, attack boost.", "power": 10, "effect": "enhances attack"},
-        "staff_of_wisdom": {"description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"}
+        "amulet_of_vitality": {
+            "description": "Glowing amulet, life force.", "power": 15, "effect": "increases health"
+        },
+        "ring_of_strength": {
+            "description": "Powerful ring, attack boost.", "power": 10, "effect": "enhances attack"
+        },
+        "staff_of_wisdom": {
+            "description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"
+        }
     }
 
     # Randomly discover an artifact
@@ -121,10 +127,14 @@ def main():
         artifact_keys = list(artifacts.keys())
         if artifact_keys:
             artifact_name = random.choice(artifact_keys)
-            player_stats, artifacts = discover_artifact(player_stats, artifacts, artifact_name)
+            player_stats, artifacts = discover_artifact(
+                player_stats, artifacts, artifact_name
+            )
 
     if player_stats["health"] > 0:
-        player_stats, inventory, clues = enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts)
+        player_stats, inventory, clues = enter_dungeon(
+            player_stats, inventory, dungeon_rooms, clues, artifacts
+        )
 
     print("\n--- Game End ---")
     print(f"Final Health: {player_stats['health']}, Attack: {player_stats['attack']}")
