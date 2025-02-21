@@ -34,12 +34,14 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
     for room in dungeon_rooms:
         room_name, item, challenge_type, challenge_outcome = room
 
-        print(f"You have entered: {room_name}")
+        print(f"\nYou have entered: {room_name}")
 
+        # Handling found items
         if item:
             inventory.append(item)
             print(f"You found a {item} and added it to your inventory!")
 
+        # Handling challenges
         if challenge_type == "library":
             print("A vast library filled with ancient, cryptic texts.")
             possible_clues = [
@@ -56,6 +58,16 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
             if "staff_of_wisdom" in artifacts:
                 print("You understand the meaning of the clues and can bypass a puzzle challenge!")
 
+        elif challenge_outcome:
+            success_message, fail_message, health_penalty = challenge_outcome
+
+            if random.random() < 0.5:  # 50% chance of success
+                print(success_message)
+            else:
+                print(fail_message)
+                player_stats["health"] -= abs(health_penalty)
+                print(f"You lost {abs(health_penalty)} health!")
+
     return player_stats, inventory, clues
 
 def main():
@@ -69,7 +81,6 @@ def main():
     ]
 
     player_stats = {'health': 100, 'attack': 5}
-    monster_health = 70
     inventory = []
     clues = set()
 
@@ -79,8 +90,7 @@ def main():
         "staff_of_wisdom": {"description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"}
     }
 
-    has_treasure = random.choice([True, False])
-
+    # Random chance to discover an artifact
     if random.random() < 0.3:
         artifact_keys = list(artifacts.keys())
         if artifact_keys:
