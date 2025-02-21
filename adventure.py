@@ -1,5 +1,4 @@
 import random
-import pytest
 
 def discover_artifact(player_stats, artifacts, artifact_name):
     """Handles artifact discovery and applies effects."""
@@ -33,13 +32,8 @@ def find_clue(clues, new_clue):
 def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
     """Handles dungeon navigation and interactions."""
     for room in dungeon_rooms:
-        # Ensure the room is a tuple of 4 elements
-        if len(room) != 4:
-            raise TypeError(f"Invalid room structure (wrong number of elements): {room}")
-        
-        # Ensure the last element is either a tuple or None
-        if room[3] is not None and not isinstance(room[3], tuple):
-            raise TypeError(f"Invalid room structure (expected a tuple for challenge outcome): {room}")
+        if len(room) != 4 or not isinstance(room[3], tuple) and room[3] is not None:
+            raise TypeError(f"Invalid room structure: {room}")
 
         room_name, item, challenge_type, challenge_outcome = room
 
@@ -51,7 +45,7 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
             print(f"You found a {item} and added it to your inventory!")
 
         # Handle challenge (trap, puzzle, etc.)
-        if challenge_type == "puzzle":
+        if challenge_type == "puzzle" and challenge_outcome:
             print(f"This room contains a puzzle challenge!")
             success, failure, health_change = challenge_outcome
             # Simulating success/failure
@@ -61,7 +55,7 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
                 print(failure)
                 player_stats["health"] += health_change
 
-        elif challenge_type == "trap":
+        elif challenge_type == "trap" and challenge_outcome:
             print("This room contains a trap!")
             success, failure, health_change = challenge_outcome
             # Simulating success/failure
@@ -117,19 +111,30 @@ def main():
     clues = set()
 
     artifacts = {
-        "amulet_of_vitality": {"description": "Glowing amulet, life force.", "power": 15, "effect": "increases health"},
-        "ring_of_strength": {"description": "Powerful ring, attack boost.", "power": 10, "effect": "enhances attack"},
-        "staff_of_wisdom": {"description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"}
+        "amulet_of_vitality": {
+            "description": "Glowing amulet, life force.", "power": 15, "effect": "increases health"
+        },
+        "ring_of_strength": {
+            "description": "Powerful ring, attack boost.", "power": 10, "effect": "enhances attack"
+        },
+        "staff_of_wisdom": {
+            "description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"
+        }
     }
 
+    # Randomly discover an artifact
     if random.random() < 0.3:
         artifact_keys = list(artifacts.keys())
         if artifact_keys:
             artifact_name = random.choice(artifact_keys)
-            player_stats, artifacts = discover_artifact(player_stats, artifacts, artifact_name)
+            player_stats, artifacts = discover_artifact(
+                player_stats, artifacts, artifact_name
+            )
 
     if player_stats["health"] > 0:
-        player_stats, inventory, clues = enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts)
+        player_stats, inventory, clues = enter_dungeon(
+            player_stats, inventory, dungeon_rooms, clues, artifacts
+        )
 
     print("\n--- Game End ---")
     print(f"Final Health: {player_stats['health']}, Attack: {player_stats['attack']}")
