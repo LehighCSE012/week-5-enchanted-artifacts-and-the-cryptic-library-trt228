@@ -1,5 +1,4 @@
 import random
-import subprocess
 
 def discover_artifact(player_stats, artifacts, artifact_name):
     """Handles artifact discovery and applies effects."""
@@ -38,13 +37,35 @@ def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
 
         room_name, item, challenge_type, challenge_outcome = room
 
-        print(f"You have entered: {room_name}")
+        print(f"\nYou have entered: {room_name}")
 
+        # Handle item collection
         if item:
             inventory.append(item)
             print(f"You found a {item} and added it to your inventory!")
 
-        if challenge_type == "library":
+        # Handle challenge (trap, puzzle, etc.)
+        if challenge_type == "puzzle":
+            print(f"This room contains a puzzle challenge!")
+            success, failure, health_change = challenge_outcome
+            # Simulating success/failure
+            if random.choice([True, False]):
+                print(success)
+            else:
+                print(failure)
+                player_stats["health"] += health_change
+
+        elif challenge_type == "trap":
+            print("This room contains a trap!")
+            success, failure, health_change = challenge_outcome
+            # Simulating success/failure
+            if random.choice([True, False]):
+                print(success)
+            else:
+                print(failure)
+                player_stats["health"] += health_change
+
+        elif challenge_type == "library":
             print("A vast library filled with ancient, cryptic texts.")
             possible_clues = [
                 "The treasure is hidden where the dragon sleeps.",
@@ -95,6 +116,7 @@ def main():
         "staff_of_wisdom": {"description": "Staff of wisdom, ancient.", "power": 5, "effect": "solves puzzles"}
     }
 
+    # Randomly discover an artifact
     if random.random() < 0.3:
         artifact_keys = list(artifacts.keys())
         if artifact_keys:
