@@ -1,4 +1,5 @@
 import random
+import subprocess
 
 def discover_artifact(player_stats, artifacts, artifact_name):
     """Handles artifact discovery and applies effects."""
@@ -32,10 +33,9 @@ def find_clue(clues, new_clue):
 def enter_dungeon(player_stats, inventory, dungeon_rooms, clues, artifacts):
     """Handles dungeon navigation and interactions."""
     for room in dungeon_rooms:
-        if len(room) != 4:
-            print(f"Skipping room {room[0]} due to incorrect tuple structure.")
-            continue
-        
+        if len(room) != 4 or not isinstance(room[3], tuple):
+            raise TypeError(f"Invalid room structure: {room}")
+
         room_name, item, challenge_type, challenge_outcome = room
 
         print(f"You have entered: {room_name}")
@@ -70,7 +70,10 @@ def acquire_item(inventory, item):
 
 def display_inventory(inventory):
     """Displays the current inventory."""
-    print("Inventory:", inventory)
+    if not inventory:
+        print("Your inventory is empty.")
+    else:
+        print("Inventory:", inventory)
 
 def main():
     """Main game loop."""
